@@ -4,7 +4,7 @@ namespace CookingMultithreading;
 
 internal class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         Console.WriteLine("Welcome to our kitchen!!");
 
@@ -49,38 +49,51 @@ public class Kitchen()
     public void CookBreakfast()
     {
         stopwatch.Start();
-        CookEggs();
-        CookBacon();
-        CookToast();
+        Task cookEggs = CookEggs();
+        cookEggs.Wait();
+        Task cookBacon = CookBacon();
+        cookBacon.Wait();
+        Task cookToast = CookToast();
+        cookToast.Wait();
         stopwatch.Stop();
         Console.WriteLine("Time taken: " + stopwatch.Elapsed.ToString(@"m\:ss\.fff"));
         Console.WriteLine("Breakfast Order is ready to be served!");
     }
 
-    void CookEggs()
+    Task CookEggs()
     {
-        Console.WriteLine("Start Cooking Eggs");
+        return Task.Run(async () =>
+        {
 
-        Thread.Sleep(random.Next(3000, 5000));
+            Console.WriteLine("Start Cooking Eggs");
 
-        Console.WriteLine("Finish Cooking Eggs");
+            await Task.Delay(random.Next(3000, 5000));
+
+            Console.WriteLine("Finish Cooking Eggs");
+        });
     }
 
-    void CookBacon()
+    Task CookBacon()
     {
-        Console.WriteLine("Start Cooking Bacon");
+        return Task.Run(async () =>
+        {
+            Console.WriteLine("Start Cooking Bacon");
 
-        Thread.Sleep(random.Next(3000, 5000));
+            await Task.Delay(random.Next(3000, 5000));
 
-        Console.WriteLine("Finish Cooking Bacon");
+            Console.WriteLine("Finish Cooking Bacon");
+        });
     }
 
-    void CookToast()
+    Task CookToast()
     {
-        Console.WriteLine("Start Cooking Toast");
+        return Task.Run(async () =>
+        {
+            Console.WriteLine("Start Cooking Toast");
 
-        Thread.Sleep(random.Next(3000, 5000));
+            await Task.Delay(random.Next(3000, 5000));
 
-        Console.WriteLine("Finish Cooking Toast");
+            Console.WriteLine("Finish Cooking Toast");
+        });
     }
 }
