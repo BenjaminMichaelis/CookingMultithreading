@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace CookingMultithreading;
 
@@ -53,18 +53,18 @@ public class Kitchen()
 
         Task cookEggs = CookEggs();
         Console.WriteLine(nameof(CookEggs) + " After Task Creation" + " Thread ID:" + Environment.CurrentManagedThreadId);
-        cookEggs.Wait();
-        Console.WriteLine(nameof(CookEggs) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
 
         Console.WriteLine(nameof(CookBacon) + " Before Task Creation" + " Thread ID:" + Environment.CurrentManagedThreadId);
         Task cookBacon = CookBacon();
         Console.WriteLine(nameof(CookBacon) + " After Task Creation" + " Thread ID:" + Environment.CurrentManagedThreadId);
-        cookBacon.Wait();
-        Console.WriteLine(nameof(CookBacon) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
 
         Console.WriteLine(nameof(CookToast) + " Before Task Creation" + " Thread ID:" + Environment.CurrentManagedThreadId);
         Task cookToast = CookToast();
         Console.WriteLine(nameof(CookToast) + " After Task Creation" + " Thread ID:" + Environment.CurrentManagedThreadId);
+        cookEggs.Wait();
+        Console.WriteLine(nameof(CookEggs) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
+        cookBacon.Wait();
+        Console.WriteLine(nameof(CookBacon) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
         cookToast.Wait();
         Console.WriteLine(nameof(CookToast) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
         stopwatch.Stop();
