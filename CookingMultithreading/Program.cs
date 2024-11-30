@@ -12,7 +12,7 @@ internal class Program
         DiningRoom room = new();
 
         room.OrderBreakfast();
-        kitchen.CookBreakfast();
+        await kitchen.CookBreakfast();
         room.GetAndServeOrder();
     }
 }
@@ -46,7 +46,7 @@ public class Kitchen()
     Random random = new();
     private Stopwatch stopwatch = new();
 
-    public void CookBreakfast()
+    public async Task CookBreakfast()
     {
         stopwatch.Start();
         Console.WriteLine(nameof(CookEggs) + " Before Task Creation" + " Thread ID:" + Environment.CurrentManagedThreadId);
@@ -61,11 +61,11 @@ public class Kitchen()
         Console.WriteLine(nameof(CookToast) + " Before Task Creation" + " Thread ID:" + Environment.CurrentManagedThreadId);
         Task cookToast = CookToast();
         Console.WriteLine(nameof(CookToast) + " After Task Creation" + " Thread ID:" + Environment.CurrentManagedThreadId);
-        cookEggs.Wait();
+        await cookEggs;
         Console.WriteLine(nameof(CookEggs) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
-        cookBacon.Wait();
+        await cookBacon;
         Console.WriteLine(nameof(CookBacon) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
-        cookToast.Wait();
+        await cookToast;
         Console.WriteLine(nameof(CookToast) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
         stopwatch.Stop();
         Console.WriteLine("Time taken: " + stopwatch.Elapsed.ToString(@"m\:ss\.fff"));
