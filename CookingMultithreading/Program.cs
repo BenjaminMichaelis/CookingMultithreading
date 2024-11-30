@@ -61,12 +61,8 @@ public class Kitchen()
         Console.WriteLine(nameof(CookToast) + " Before Task Creation" + " Thread ID:" + Environment.CurrentManagedThreadId);
         Task cookToast = CookToast();
         Console.WriteLine(nameof(CookToast) + " After Task Creation" + " Thread ID:" + Environment.CurrentManagedThreadId);
-        await cookEggs;
-        Console.WriteLine(nameof(CookEggs) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
-        await cookBacon;
-        Console.WriteLine(nameof(CookBacon) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
-        await cookToast;
-        Console.WriteLine(nameof(CookToast) + " After Task Wait" + " Thread ID:" + Environment.CurrentManagedThreadId);
+        await Task.WhenAll(cookEggs, cookBacon, cookToast);
+        Console.WriteLine("After Task When All" + " Thread ID:" + Environment.CurrentManagedThreadId);
         stopwatch.Stop();
         Console.WriteLine("Time taken: " + stopwatch.Elapsed.ToString(@"m\:ss\.fff"));
         Console.WriteLine("Breakfast Order is ready to be served!");
