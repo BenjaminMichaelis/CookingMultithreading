@@ -1,15 +1,22 @@
-param([switch]$NoBuild)
+param([switch]$NoBuild, [switch]$FileBased)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-$project = Join-Path (Split-Path $PSScriptRoot -Parent) 'CookingMultithreading\CookingMultithreading.csproj'
+$sampleDirectory = Join-Path (Split-Path $PSScriptRoot -Parent) 'CookingMultithreading'
+$project = Join-Path $sampleDirectory 'CookingMultithreading.csproj'
 
-if (-not $NoBuild) {
-    & dotnet build $project --configuration Release --nologo
-    if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+if ($FileBased) {
+    # File-based apps (.NET 10+ SDK) build implicitly; a sibling .csproj requires --file.
+    $output = @(& dotnet run --file (Join-Path $sampleDirectory 'Program.cs') --configuration Release -p:TreatWarningsAsErrors=true)
 }
+else {
+    if (-not $NoBuild) {
+        & dotnet build $project --configuration Release --nologo
+        if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+    }
 
-$output = @(& dotnet run --project $project --configuration Release --no-build)
+    $output = @(& dotnet run --project $project --configuration Release --no-build)
+}
 if ($LASTEXITCODE -ne 0) { throw 'Sample failed.' }
 $output | Write-Output
 $text = $output -join "`n"
