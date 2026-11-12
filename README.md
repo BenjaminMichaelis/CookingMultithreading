@@ -14,8 +14,20 @@ git switch main
 dotnet run --project .\CookingMultithreading\CookingMultithreading.csproj --configuration Release
 ```
 
-Switch branches and run the same command. Start with the waiting examples in
-this order:
+Switch branches and run the same command.
+
+Each lesson is a single `Program.cs`, so with the .NET 10 SDK or later you can
+also run it as a [file-based app](https://learn.microsoft.com/dotnet/core/sdk/file-based-apps),
+without the project file:
+
+```powershell
+dotnet run --file .\CookingMultithreading\Program.cs --configuration Release
+```
+
+`--file` is required because `Program.cs` sits next to the `.csproj`. File-based
+runs target the SDK's default framework rather than .NET 8.
+
+Start with the waiting examples in this order:
 
 | Branch | Kitchen behavior | Caller behavior | Approximate cooking time |
 |---|---|---|---|
@@ -113,9 +125,12 @@ counter results as applicable:
 
 ```powershell
 .\tests\Verify-Sample.ps1
+.\tests\Verify-Sample.ps1 -FileBased
 dotnet format .\CookingMultithreading.sln --verify-no-changes --no-restore
 ```
 
-Use `.\tests\Verify-Sample.ps1 -NoBuild` after an existing Release build. The check
+Use `.\tests\Verify-Sample.ps1 -NoBuild` after an existing Release build.
+`-FileBased` runs `Program.cs` as a file-based app (requires the .NET 10 SDK or
+later) with warnings treated as errors. The check
 does not require exact elapsed times, particular thread IDs, or a parallel
 speedup. Run timing-sensitive demonstrations on an otherwise responsive machine.
