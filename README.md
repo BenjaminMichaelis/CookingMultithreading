@@ -126,7 +126,7 @@ counter results as applicable:
 ```powershell
 .\tests\Verify-Sample.ps1
 .\tests\Verify-Sample.ps1 -FileBased
-dotnet format .\CookingMultithreading.sln --verify-no-changes --no-restore
+dotnet format .\CookingMultithreading.slnx --verify-no-changes --no-restore
 ```
 
 Use `.\tests\Verify-Sample.ps1 -NoBuild` after an existing Release build.
