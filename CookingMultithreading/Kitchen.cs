@@ -1,26 +1,54 @@
 namespace CookingMultithreading;
 
-internal sealed class Kitchen
+internal sealed class Kitchen(CookingTimeline timeline)
 {
-    private readonly CookingTrace trace;
-    private readonly CookingStep eggs;
-    private readonly CookingStep bacon;
-    private readonly CookingStep toast;
+    private const int Cooks = 2;
+    private const int IncrementsPerCook = 1000;
+    public const int ExpectedServings = Cooks * IncrementsPerCook;
 
-    public Kitchen(CookingTimeline timeline)
+    public int CountServings(bool useAtomicIncrement)
     {
-        trace = timeline.CreateTrace("Kitchen");
-        eggs = new CookingStep(3000, timeline.CreateTrace("Eggs"));
-        bacon = new CookingStep(2000, timeline.CreateTrace("Bacon"));
-        toast = new CookingStep(1000, timeline.CreateTrace("Toast"));
-    }
+        int servings = 0;
+        using Barrier phases = new(Cooks);
+        CookingTrace coordinator = timeline.CreateTrace("Kitchen");
+        Thread[] cooks = new Thread[Cooks];
+        for (int cook = 0; cook < cooks.Length; cook++)
+        {
+            CookingTrace trace = timeline.CreateTrace($"Cook {cook + 1}");
+            cooks[cook] = new Thread(() =>
+            {
+                trace.Record("started");
+                for (int serving = 0; serving < IncrementsPerCook; serving++)
+                {
+                    if (useAtomicIncrement)
+                    {
+                        phases.SignalAndWait();
+                        Interlocked.Increment(ref servings);
+                    }
+                    else
+                    {
+                        // Both cooks read before either writes; the second barrier completes both writes.
+                        int snapshot = servings;
+                        phases.SignalAndWait();
+                        servings = snapshot + 1;
+                    }
 
-    public void CookBreakfast()
-    {
-        trace.Record("started");
-        eggs.Cook();
-        bacon.Cook();
-        toast.Cook();
-        trace.Record("finished");
+                    phases.SignalAndWait();
+                }
+                trace.Record("finished");
+            });
+        }
+
+        coordinator.Record("started");
+        foreach (Thread cook in cooks)
+        {
+            cook.Start();
+        }
+        foreach (Thread cook in cooks)
+        {
+            cook.Join();
+        }
+        coordinator.Record("finished");
+        return servings;
     }
 }

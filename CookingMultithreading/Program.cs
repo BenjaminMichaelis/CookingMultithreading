@@ -5,20 +5,25 @@ internal static class Program
     private static void Main()
     {
         Console.WriteLine("Welcome to our kitchen!!");
-        Console.WriteLine("Lesson: main");
-        Console.WriteLine("Order up! Eggs (3s), Bacon (2s), Toast (1s).");
-        Console.WriteLine("Run: Breakfast");
+        Console.WriteLine("Lesson: SharedStateRace");
+        Console.WriteLine("Two cooks each add 1,000 servings to the same counter.");
+        Console.WriteLine("Barriers deliberately force the unsafe read-modify-write interleaving.");
 
-        CookingTimeline timeline = new();
-        CookingTrace caller = timeline.CreateTrace("Caller");
-        Kitchen kitchen = new(timeline);
-        caller.Record("calling kitchen");
-        kitchen.CookBreakfast();
-        caller.Record("kitchen call returned");
-        caller.Record("breakfast ready");
-        timeline.Stop();
+        Console.WriteLine("Run: Unsafe counter");
+        CookingTimeline unsafeTimeline = new();
+        Kitchen unsafeKitchen = new(unsafeTimeline);
+        int unsafeServings = unsafeKitchen.CountServings(useAtomicIncrement: false);
+        unsafeTimeline.Stop();
+        unsafeTimeline.Print();
+        Console.WriteLine($"Unsafe servings: {unsafeServings} / {Kitchen.ExpectedServings}");
 
-        timeline.Print();
-        Console.WriteLine("Breakfast Order is ready to be served!");
+        Console.WriteLine("Run: Atomic counter");
+        CookingTimeline atomicTimeline = new();
+        Kitchen atomicKitchen = new(atomicTimeline);
+        int atomicServings = atomicKitchen.CountServings(useAtomicIncrement: true);
+        atomicTimeline.Stop();
+        atomicTimeline.Print();
+        Console.WriteLine($"Atomic servings: {atomicServings} / {Kitchen.ExpectedServings}");
+        Console.WriteLine("Interlocked.Increment makes the entire update atomic; logging is outside the experiment.");
     }
 }
