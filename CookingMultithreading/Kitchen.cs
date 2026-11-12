@@ -15,26 +15,26 @@ internal sealed class Kitchen
         toast = new CookingStep(1000, timeline.CreateTrace("Toast"));
     }
 
-    public void CookBreakfast()
+    public async Task CookBreakfastAsync()
     {
         trace.Record("started");
         trace.Record("calling Eggs.CookAsync");
         Task cookEggs = eggs.CookAsync();
-        trace.Record("Eggs task returned; blocking in Wait");
-        cookEggs.Wait();
-        trace.Record("Eggs wait returned");
+        trace.Record("Eggs task returned; awaiting completion");
+        await cookEggs;
+        trace.Record("Eggs await returned");
 
         trace.Record("calling Bacon.CookAsync");
         Task cookBacon = bacon.CookAsync();
-        trace.Record("Bacon task returned; blocking in Wait");
-        cookBacon.Wait();
-        trace.Record("Bacon wait returned");
+        trace.Record("Bacon task returned; awaiting completion");
+        await cookBacon;
+        trace.Record("Bacon await returned");
 
         trace.Record("calling Toast.CookAsync");
         Task cookToast = toast.CookAsync();
-        trace.Record("Toast task returned; blocking in Wait");
-        cookToast.Wait();
-        trace.Record("Toast wait returned");
+        trace.Record("Toast task returned; awaiting completion");
+        await cookToast;
+        trace.Record("Toast await returned");
         trace.Record("finished");
     }
 }
