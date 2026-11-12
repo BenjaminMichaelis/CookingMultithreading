@@ -1,18 +1,18 @@
 namespace CookingMultithreading;
 
-internal sealed class CookingStep(int milliseconds, CookingTrace trace)
+internal sealed class CookingStep(CookingTrace trace)
 {
-    public void Cook()
-    {
-        trace.Record("started");
-        Thread.Sleep(milliseconds);
-        trace.Record("finished");
-    }
+    private const int Iterations = 100_000_000;
 
-    public async Task CookAsync()
+    public long Cook()
     {
         trace.Record("started");
-        await Task.Delay(milliseconds);
+        long checksum = 0;
+        for (int ingredient = 0; ingredient < Iterations; ingredient++)
+        {
+            checksum += ingredient % 97;
+        }
         trace.Record("finished");
+        return checksum;
     }
 }
