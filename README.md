@@ -27,29 +27,26 @@ dotnet run --file .\CookingMultithreading\Program.cs --configuration Release
 `--file` is required because `Program.cs` sits next to the `.csproj`. File-based
 runs target the SDK's default framework rather than .NET 8.
 
-Start with the waiting examples in this order:
+Branches are listed in lesson order below. Each lesson has a numbered local
+branch alias so `git branch` sorts in the same order. The original branch names
+remain available for compatibility.
 
-| Branch | Kitchen behavior | Caller behavior | Approximate cooking time |
-|---|---|---|---|
-| `main` | `Thread.Sleep`, one dish at a time | Blocks | 6 seconds |
-| `AsyncCooking` | Call `CookAsync`, immediately `.Wait()`, then start the next dish | Blocks | 6 seconds |
-| `AsyncCooking-ThreadIds` | Same as `AsyncCooking`, with more coordinator checkpoints | Blocks | 6 seconds |
-| `AsyncCookingSequentialAwait` | Await each dish before starting the next | Returns at the first incomplete await | 6 seconds |
-| `AsyncCookingFireUpFront` | Start all dishes, then `.Wait()` for each | Blocks | 3 seconds |
-| `AwaitBreakfast` | Start all dishes, then await each task | Returns at the first incomplete await | 3 seconds |
-| `AwaitTaskWhenAll` | Start all dishes, then await the group | Returns at the first incomplete await | 3 seconds |
+| # | Numbered branch | Original branch | Lesson | Approximate cooking time |
+|---|---|---|---|---|
+| 01 | `01-Synchronous` | `main` | `Thread.Sleep`, one dish at a time; caller blocks | 6 seconds |
+| 02 | `02-AsyncCooking` | `AsyncCooking` | Call `CookAsync`, immediately `.Wait()`, then start the next dish; caller blocks | 6 seconds |
+| 03 | `03-AsyncCooking-ThreadIds` | `AsyncCooking-ThreadIds` | Same as lesson 02, with coordinator checkpoints | 6 seconds |
+| 04 | `04-AsyncCookingSequentialAwait` | `AsyncCookingSequentialAwait` | Await each dish before starting the next; caller returns at the first incomplete await | 6 seconds |
+| 05 | `05-AsyncCookingFireUpFront` | `AsyncCookingFireUpFront` | Start all dishes, then `.Wait()` for each; caller blocks | 3 seconds |
+| 06 | `06-AwaitBreakfast` | `AwaitBreakfast` | Start all dishes, then await each task; caller returns at the first incomplete await | 3 seconds |
+| 07 | `07-AwaitTaskWhenAll` | `AwaitTaskWhenAll` | Start all dishes, then await the group; caller returns at the first incomplete await | 3 seconds |
+| 08 | `08-ParallelCooking` | `ParallelCooking` | Compare sequential and thread-pool CPU work | — |
+| 09 | `09-SharedStateRace` | `SharedStateRace` | Reproduce a lost update, then fix it with `Interlocked.Increment` | — |
 
 Eggs take 3 seconds, bacon 2, and toast 1. Fixed, unequal waits make sequential
 versus overlapping intervals easier to see; completion order and exact timings
 still depend on scheduling. The early `.Wait()` branches are intentionally
 blocking counterexamples.
-
-The other two branches explore separate concepts:
-
-| Branch | Lesson |
-|---|---|
-| `ParallelCooking` | Run the same arithmetic checksum workload sequentially, then on the thread pool with `Task.Run` and `Task.WhenAll`. Both results must match. |
-| `SharedStateRace` | Two cooks update a shared servings counter. Force a lost update, then repeat with `Interlocked.Increment`. |
 
 ## Read the timeline
 
